@@ -4,7 +4,7 @@
 # infixTOpostfix.py
 # El proposito es transformar una expresión infix a postfix usando el algoritmo Shunting Yard
 
-precedencia = {'*': 3, '+': 2, '.': 1, '|': 0}
+precedencia = {'?':3, '*': 3, '+': 2, '.': 1, '|': 0}
 
 
 # precedencia añadida en ciclo de verificación de tokens
