@@ -3,8 +3,9 @@
 #
 # infixTOpostfix.py
 # El proposito es transformar una expresión infix a postfix usando el algoritmo Shunting Yard
+import infixConcatenator as concatenator
 
-precedencia = {'?':3, '*': 3, '+': 2, '.': 1, '|': 0}
+precedencia = {'?':3, '*': 3, '+': 3, '.': 2, '|': 1}
 
 
 # precedencia añadida en ciclo de verificación de tokens
@@ -15,6 +16,10 @@ precedencia = {'?':3, '*': 3, '+': 2, '.': 1, '|': 0}
 def shunting_yard(exp):
     retorno = []
     operadores = []
+
+    exp = concatenator.agregarPuntos(exp)
+    exp = exp.replace(' ', '')
+    exp = ''.join([exp[i] for i in reversed(range(1, len(exp))) if not (exp[i] == "*" and exp[i - 1] == "*")])
     
     tokens = list(exp)
     
