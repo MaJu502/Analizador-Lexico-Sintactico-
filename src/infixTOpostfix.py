@@ -3,7 +3,7 @@
 #
 # infixTOpostfix.py
 # El proposito es transformar una expresión infix a postfix usando el algoritmo Shunting Yard
-import infixConcatenator as concatenator
+from src.infixConcatenator import *
 
 precedencia = {'?':3, '*': 3, '+': 3, '.': 2, '|': 1}
 
@@ -17,48 +17,68 @@ def shunting_yard(exp):
     retorno = []
     operadores = []
 
-    exp = concatenator.agregarPuntos(exp)
-    exp = exp.replace(' ', '')
-    exp = ''.join([exp[i] for i in reversed(range(1, len(exp))) if not (exp[i] == "*" and exp[i - 1] == "*")])
+    exp = agregarPuntos(exp)
+    print( 'despues de puntos: ', exp)
+    temp = exp.replace(' ', '')
+
+    # borrar duplicados
+    simplificada = ''
+    atras = ''
+    for j in temp:
+        actual = atras[-1] + j if atras else j
+
+        if actual in ('**', '~~', '??'):
+            continue
+        else:
+            simplificada += j
+
+        atras = atras[-1] + j if atras else j
+    exp = simplificada
     
-    tokens = list(exp)
-    
+
+    tokens = list(exp)   
     for i in tokens:
+        print('ahorita evaluo: ', i)
+        print('retorno es: ', retorno)
+        print('operadores es: ', operadores)
 
         # primero las verificaciones que interactuan unicamente con el stack de retorno
         # casi 'base'
         if i.isalpha() or i == 'ε':
             # si es letra o epsilon
             retorno.append(i)
-        elif i in '+*?':
-            # si es cerradura o ?
-            retorno[-1] += i
 
         # verificaciones que interactuan con el stack de operadores 
         elif i == '(':
             # parentesis que abre --> solo agrega a operadores
             operadores.append(i)
+
         elif i == ')':
             # parentesis que cierra --> comienza a verificar contenido de parentesis 
             while operadores[-1] != '(':
 
-                """ mientras el siguiente elemento del stack de operadores no 
+                ''' mientras el siguiente elemento del stack de operadores no 
                     sea el parentesis que completa va a continuar haciendo el
-                    append al retorno."""
+                    append al retorno.'''
 
                 retorno.append(operadores.pop())
             # saca nuevo elemento del stack de operadores
             operadores.pop()
-        elif i in '|.':
+
+        elif i in '|.?*+':
+            print('ahorita evaluo el caso de |.')
             # si es un or --> ver ambos componentes (puede ser más de un solo elemento) del or ya que es operador binario
-            while operadores and operadores[-1] != '(':
-                # mientras hayan elementos en el stack de operadores y no sea un parentesis que abre
-                while precedencia[i] <= precedencia[operadores[-1]]:
-                    # verificar que la precedencia del token actual sea menor o igual a la del siguiente operador
-                    retorno.append(operadores.pop())
+            while operadores and precedencia[i] <= precedencia[operadores[-1]]:
+                print('         > segundo while')
+                # verificar que la precedencia del token actual sea menor o igual a la del siguiente operador
+                retorno.append(operadores.pop())
             # caso base del or
             operadores.append(i)
+            print('salgo del caso |.')
+            print(retorno)
+            print(operadores)
 
+        print('\n\n\n')
 
     # Se evaluó todo se agregan operadores restantes.
     while operadores:
@@ -66,4 +86,4 @@ def shunting_yard(exp):
         retorno.append(operadores.pop())
     
     # Retornar todos los elementos de la expresión postfix generada.
-    return ''.join(retorno) + '.#'
+    return ''.join(retorno) + '#.'
