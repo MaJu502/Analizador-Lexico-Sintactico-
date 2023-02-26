@@ -1,5 +1,0 @@
-Thompson
-Estados: [0, 1]
-Inicio: [0]
-Aceptacion: [1]
-Transiciones: [(0, 1, '.')]

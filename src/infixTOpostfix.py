@@ -26,7 +26,7 @@ def shunting_yard(exp):
     for j in temp:
         actual = atras[-1] + j if atras else j
 
-        if actual in ('**', '~~', '??'):
+        if actual in ('**', 'εε', '??'):
             continue
         else:
             simplificada += j
