@@ -1,162 +1,122 @@
 # Universidad del Valle de Guatemala
 # Marco Jurado 20308
 #
+from src.outPutTXT import *
 
 def generadorAFN(exp:str):
+    retorno = []
     exp = exp.replace('.#', '')
-    bucket = exp.split('.')
-    x = AFN(bucket[0])
-    for element in bucket[-1]:
-        x = agregarAFN(x, AFN(element))
-    return x
+    exp = list(exp)
+    print(exp)
+    for element in exp:
+        # se verifica que tipo de elemento es
+        if element.isalpha() or element == 'ε':
+            # caso base de letra o epsilon
+            retorno.append(AFN(element,''))
 
-def agregarAFN(q0, q1):
-    offset = len(q0[0]) - 1
+        elif element in '|.':
+            # caso or se tienen que sacar los ultimos dos construidos 
+            a = retorno.pop()
+            b = retorno.pop()
+            retorno.append(binaryJoin(a,b, element))
 
-    #elementos del nuevo afn.
-    transiciones = [(q[0] + offset, q[1] + offset, q[2]) for q in q1[3]]
-    estados = list(range(offset + len(q1[0])))
-    inicio = [q0[1][0]]
-    aceptacion = [q1[2][0] + offset]
+        elif element in '*+?':
+            # sacar el ultimo afn para agregarle la cerradura
+            a = retorno.pop()
+            retorno.append(AFN(a,element))
 
-    return [estados, inicio, aceptacion, q0[3] + transiciones]
-
-def AFN(Concat):
-    estados = []
-    inicial = []
-    aceptacion = []
-    transiciones = []
-
-    # Cuando son caracteres
-    if len(Concat) == 1:
+    return retorno
+    
+def AFN(element, operador):
+    if operador == '':
+        # es una letra o epsilon.
         estados = [0, 1]
         inicial = [0]
         aceptacion = [1]
-        transiciones = [(0, 1, Concat)]
+        transiciones = [(0, 1, element)]
     
-    elif len(Concat) > 1:
-        Concat = list(Concat)
-        operador = Concat.pop()
+    elif operador == '*':
+        estados = list(range(len(element[0]) + 2))
+        inicial = [0]
+        aceptacion = [len(element[0]) + 1]
+        for i, (from_state, to_state, symbol) in enumerate(element[3]):
+            element[3][i] = (from_state + 1, to_state + 1, symbol)
+        transiciones = [
+                (0, 1, "ε"),
+                *element[3],
+                (len(element[0]), len(element[0]) + 1, "ε"),
+                (0, len(element[0]) + 1, "ε"),
+                (len(element[0]), 1, "ε"),
+            ]
 
-        if operador == "|":
-            a, b = "", ""
+    elif operador == '+':
+        estados = list(range(len(element[0]) + 2))
+        inicial = [0]
+        aceptacion = [len(element[0]) + 1]
+        for i, (from_state, to_state, symbol) in enumerate(element[3]):
+            element[3][i] = (from_state + 1, to_state + 1, symbol)
+        transiciones = [
+                (0, 1, "ε"),
+                *element[3],
+                (len(element[0]), len(element[0]) + 1, "ε"),
+                (len(element[0]), 1, "ε"),
+            ]
+        
+    elif operador == '?':
+        estados = list(range(len(element[0]) + 2))
+        inicial = [0]
+        aceptacion = [len(element[0]) + 1]
+        for i, (from_state, to_state, symbol) in enumerate(element[3]):
+            element[3][i] = (from_state + 1, to_state + 1, symbol)
+        transiciones = [
+                (0, 1, "ε"),
+                *element[3],
+                (len(element[0]), len(element[0]) + 1, "ε"),
+                (0, len(element[0]) + 1, "ε"),
+            ]
 
-            # A y b son letras
-            if len(Concat) == 2:
-                a = AFN(Concat.pop())
-                b = AFN(Concat.pop())
+    return [estados, inicial, aceptacion, transiciones]
 
-            # A es letra, b es operacion
-            elif (
-                abecedario.fullmatch(Concat[-1]) is not None
-                and abecedario.fullmatch(Concat[-2]) is None
-            ):
-                a = AFN(Concat.pop())
-                b = AFN("".join(Concat))
 
-            # b es letra, a es operacion
-            elif (
-                abecedario.fullmatch(Concat[-1]) is None
-                and abecedario.fullmatch(Concat[-2]) is not None
-            ):
-                # (Ejemplo) aba|
-                b = AFN(Concat.pop(0))
-                a = AFN("".join(Concat))
-
-            # a y b son operciones
-            else:
-                a = AFN("".join(Concat))
-                b = AFN("".join(Concat))
-
-            suma = len(a[0]) + len(b[0])
-            offset_a = 1
-
-            for i in range(len(a[3])):
-                transicion = a[3]
-                transicion[i] = (
-                    transicion[i][0] + offset_a,
-                    transicion[i][1] + offset_a,
-                    transicion[i][2],
-                )
-
-            offset_b = len(a[0]) + 1
-            for i in range(len(b[3])):
-                transicion = b[3]
-                transicion[i] = (
-                    transicion[i][0] + offset_b,
-                    transicion[i][1] + offset_b,
-                    transicion[i][2],
-                )
-            Estados = list(range(2 + suma))
-            Inicio = [0]
-            Aceptacion = [suma + 1]
-            Transiciones = [
-                (0, 1, "~"),
-                (0, len(a[0]) + 1, "~"),
+def binaryJoin(a,b,operador):
+    if operador == '|':
+        suma = len(a[0]) + len(b[0])
+        estados = list(range(2 + suma))
+        inicial = [0]
+        aceptacion = [suma + 1]
+        for i, (from_state, to_state, symbol) in enumerate(a[3]):
+            a[3][i] = (from_state + 1, to_state + 1, symbol)
+        for i, (from_state, to_state, symbol) in enumerate(b[3]):
+            b[3][i] = (from_state + len(a[0]) + 1, to_state + len(a[0]) + 1, symbol)
+        transiciones = [
+                (0, 1, "ε"),
+                (0, len(a[0]) + 1, "ε"),
                 *a[3],
                 *b[3],
-                (len(a[0]), suma + 1, "~"),
-                (len(b[0]) + offset_b - 1, suma + 1, "~"),
+                (len(a[0]), suma + 1, "ε"),
+                (suma, suma + 1, "ε"),
             ]
 
-        elif operador == "*":
-            a = AFN("".join(Concat))
-            offset = len(a[0])
-            Estados = list(range(offset + 2))
-            Inicio = [0]
-            Aceptacion = [offset + 1]
-            for i in range(len(a[3])):
-                transicion = a[3]
-                transicion[i] = (
-                    transicion[i][0] + 1,
-                    transicion[i][1] + 1,
-                    transicion[i][2],
-                )
-            Transiciones = [
-                (0, 1, "~"),
+    elif operador == '.':
+        estados = list(range(len(a[0]) + len(b[0])))
+        inicial = [0]
+        aceptacion = [len(estados)-1]
+        for i, (from_state, to_state, symbol) in enumerate(b[3]):
+            b[3][i] = (from_state + len(a[0])-1, to_state + len(a[0])-1, symbol)
+
+        transiciones = [
                 *a[3],
-                (offset, offset + 1, "~"),
-                (0, offset + 1, "~"),
-                (offset, 1, "~"),
+                *b[3]
             ]
+    return [estados, inicial, aceptacion, transiciones]
 
-        elif operador == "+":
-            a = AFN("".join(Concat))
-            offset = len(a[0])
-            Estados = list(range(offset + 2))
-            Inicio = [0]
-            Aceptacion = [offset + 1]
-            for i in range(len(a[3])):
-                transicion = a[3]
-                transicion[i] = (
-                    transicion[i][0] + 1,
-                    transicion[i][1] + 1,
-                    transicion[i][2],
-                )
-            Transiciones = [
-                (0, 1, "~"),
-                *a[3],
-                (offset, 1, "~"),
-                (offset, offset + 1, "~"),
-            ]
+def describirAFN(x, nombre):
+    titulo = f"Thompson_de_{nombre}"
+    stringEstados = f"Estados: {x[0]}"
+    stringInicio = f"Inicio: {x[1]}"
+    stringAceptacion = f"Aceptacion: {x[2]}"
+    stringTransiciones = f"Transiciones: {x[3]}"
 
-    stringEstados = "Estados: " + str(Estados)
-    stringInicio = "Inicio: " + str(Inicio)
-    stringAceptacion = "Aceptacion: " + str(Aceptacion)
-    stringTransiciones = "Transiciones: " + str(Transiciones)
-    titulo = "Thompson"
+    stringFinal = f"{titulo}\n{stringEstados}\n{stringInicio}\n{stringAceptacion}\n{stringTransiciones}"
 
-    stringFinal = (
-        titulo
-        + "\n"
-        + stringEstados
-        + "\n"
-        + stringInicio
-        + "\n"
-        + stringAceptacion
-        + "\n"
-        + stringTransiciones
-    )
-
-    txt.EscribirTexto("Thompson", stringFinal)
-    return [Estados, Inicio, Aceptacion, Transiciones]
+    generarOUT(titulo, stringFinal)
