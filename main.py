@@ -3,7 +3,7 @@ from src.validacionErrores import *
 from src.DibujarAutomata import * 
 from src.afn import *
 
-regex = 'ab*ab*'
+regex = 'b+'
 print('         >>> la regex ',regex)
 
 if validarErrores(regex) == 1:

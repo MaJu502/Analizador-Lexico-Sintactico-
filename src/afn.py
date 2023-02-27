@@ -42,6 +42,9 @@ def AFN(element, operador):
         aceptacion = [len(element[0]) + 1]
         for i, (from_state, to_state, symbol) in enumerate(element[3]):
             element[3][i] = (from_state + 1, to_state + 1, symbol)
+
+        print('las que traes ')
+        print([*element[3]])
         transiciones = [
                 (0, 1, "ε"),
                 *element[3],
