@@ -11,7 +11,13 @@ if validarErrores(regex) == 1:
     print(' >> la posti: ',postfixRegex)
 
     afnGENERADO = generadorAFN(postfixRegex)
-    print(' >> el AFN: ', afnGENERADO)
+    print(' >> el AFN: ')
+    print('     >> Estados: ',afnGENERADO[0])
+    print('     >> estado inicial: ',afnGENERADO[1])
+    print('     >> estados de aceptacion: ',afnGENERADO[2])
+    print('     >> transiciones: ')
+    for i in afnGENERADO[3]:
+        print('         ->  ', i)
     print('\n')
 
     graficarAutom(afnGENERADO)
