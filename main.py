@@ -11,8 +11,19 @@ if validarErrores(regex) == 1:
     print(' >> la posti: ',postfixRegex)
 
     afnGENERADO = generadorAFN(postfixRegex)
-    print(' >> el AFN: ', afnGENERADO)
-    print('\n')
+    # Open the file in write mode
+    with open('afn.txt', 'w',encoding='utf-8') as f:
+        f.write(' >> el AFN: \n')
+        f.write('     >> Estados: {}\n'.format(afnGENERADO[0]))
+        f.write('     >> estado inicial: {}\n'.format(afnGENERADO[1]))
+        f.write('     >> estados de aceptacion: {}\n'.format(afnGENERADO[2]))
+        f.write('     >> transiciones: \n')
+        for i in afnGENERADO[3]:
+            f.write('         ->  ')
+            for j in i:
+                f.write('{} '.format(j))
+            f.write('\n')
+        f.write('\n')
 
     graficarAutom(afnGENERADO)
 
