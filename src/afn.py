@@ -4,6 +4,7 @@
 from src.outPutTXT import *
 
 def generadorAFN(exp:str):
+    print('entra ',exp)
     retorno = []
     exp = exp.replace('.#', '')
     exp = list(exp)
@@ -25,7 +26,7 @@ def generadorAFN(exp:str):
             a = retorno.pop()
             retorno.append(AFN(a,element))
 
-    return retorno
+    return retorno[0]
     
 def AFN(element, operador):
     if operador == '':
@@ -98,7 +99,7 @@ def binaryJoin(a,b,operador):
             ]
 
     elif operador == '.':
-        estados = list(range(len(a[0]) + len(b[0])))
+        estados = list(range(len(a[0]) + len(b[0]) - 1))
         inicial = [0]
         aceptacion = [len(estados)-1]
         for i, (from_state, to_state, symbol) in enumerate(b[3]):

@@ -74,4 +74,4 @@ def shunting_yard(exp):
         retorno.append(operadores.pop())
     
     # Retornar todos los elementos de la expresión postfix generada.
-    return ''.join(retorno) + '#.'
+    return ''.join(retorno)
