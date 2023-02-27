@@ -6,7 +6,7 @@
 # devuelve 1 si es valida y 0 si tiene errores.
 def validarErrores(exp):
     # verificar caracteres permitidos
-    if any(not i.isalpha() and i not in '*+|?()' for i in exp):
+    if any(not i.isalpha() and not i.isdigit() and i not in '*+|?()' for i in exp):
         print(' >> El ingreso contiene caracteres invalidos. Unicamente se aceptan letras y los simbolos permitidos.')
         return 0
 

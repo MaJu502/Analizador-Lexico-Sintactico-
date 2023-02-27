@@ -5,7 +5,7 @@
 # El proposito es transformar una expresión infix a postfix usando el algoritmo Shunting Yard
 from src.infixConcatenator import *
 
-precedencia = {'?':3, '*': 3, '+': 3, '.': 2, '|': 1}
+precedencia = {'?':3, '*': 3, '+': 3, '.': 2, '|': 1, '(':0, ')':0, '':0}
 
 
 # precedencia añadida en ciclo de verificación de tokens
@@ -19,6 +19,7 @@ def shunting_yard(exp):
 
     exp = agregarPuntos(exp)
     temp = exp.replace(' ', '')
+    # temp = temp.replace('?)?', '??)') - no se si se debe de dejar o no
 
     # borrar duplicados
     simplificada = ''
@@ -33,13 +34,13 @@ def shunting_yard(exp):
 
         atras = atras[-1] + j if atras else j
     exp = simplificada
-    
+    print('exp simplificada ', exp)
 
     tokens = list(exp)   
     for i in tokens:
         # primero las verificaciones que interactuan unicamente con el stack de retorno
         # casi 'base'
-        if i.isalpha() or i == 'ε':
+        if i.isalpha() or i == 'ε' or i.isdigit():
             # si es letra o epsilon
             retorno.append(i)
 

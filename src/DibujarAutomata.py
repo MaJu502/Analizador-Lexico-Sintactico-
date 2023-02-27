@@ -16,7 +16,7 @@ def graficarAutom(automata):
             graph.node(str(nodo), shape='circle', fillcolor='lightgreen', style='filled')
         
         elif nodo in final:
-            graph.node(str(nodo), shape='doublecircle', fillcolor='lightred', style='filled')
+            graph.node(str(nodo), shape='doublecircle', fillcolor='red', style='filled')
         
         else: 
             graph.node(str(nodo), shape='circle')
@@ -25,4 +25,4 @@ def graficarAutom(automata):
         graph.edge(str(from_state), str(to_state), label=symbol, arrowhead='vee')
 
 
-    graph.render()
+    graph.render("Automata", view = "True")

@@ -4,14 +4,12 @@
 from src.outPutTXT import *
 
 def generadorAFN(exp:str):
-    print('entra ',exp)
     retorno = []
     exp = exp.replace('.#', '')
     exp = list(exp)
-    print(exp)
     for element in exp:
         # se verifica que tipo de elemento es
-        if element.isalpha() or element == 'ε':
+        if element.isalpha() or element == 'ε' or element.isdigit():
             # caso base de letra o epsilon
             retorno.append(AFN(element,''))
 
@@ -42,9 +40,6 @@ def AFN(element, operador):
         aceptacion = [len(element[0]) + 1]
         for i, (from_state, to_state, symbol) in enumerate(element[3]):
             element[3][i] = (from_state + 1, to_state + 1, symbol)
-
-        print('las que traes ')
-        print([*element[3]])
         transiciones = [
                 (0, 1, "ε"),
                 *element[3],
@@ -102,6 +97,7 @@ def binaryJoin(a,b,operador):
             ]
 
     elif operador == '.':
+        a,b=b,a
         estados = list(range(len(a[0]) + len(b[0]) - 1))
         inicial = [0]
         aceptacion = [len(estados)-1]
